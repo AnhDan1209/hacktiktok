@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚠️ ĐANG TẢI DỮ LIỆU HACK...</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Hacker Terminal feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['"Fira Code"', 'monospace'],
+                    },
+                    colors: {
+                        matrixGreen: '#00ff41',
+                        darkTerminal: '#0d1117'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 65, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(0, 255, 65, 0.8); }
+        }
+        .matrix-box {
+            animation: pulse-glow 2s infinite;
+        }
+        .scanline {
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.3));
+            background-size: 100% 4px;
+        }
+    </style>
+</head>
+<body class="bg-black text-matrixGreen font-mono min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden scanline selection:bg-matrixGreen selection:text-black">
+
+    <!-- Subtle Glitch Header Banner -->
+    <div class="text-center mb-6">
+        <h1 class="text-xl sm:text-3xl font-extrabold tracking-widest text-red-500 animate-pulse uppercase">
+            ⚠️ HỆ THỐNG ĐANG XỬ LÝ DỮ LIỆU ⚠️
+        </h1>
+        <p class="text-xs sm:text-sm text-emerald-400 mt-1">Đang kết nối tới máy chủ TIK TOK</p>
+    </div>
+
+    <!-- Main Card Container -->
+    <div class="max-w-md w-full bg-darkTerminal border-2 border-matrixGreen/60 rounded-2xl p-6 matrix-box text-center relative z-10 shadow-2xl">
+        
+        <!-- Target Header -->
+        <p class="text-sm font-semibold text-slate-300 uppercase tracking-widest mb-3">
+            🎯 Mục tiêu tấn công:
+        </p>
+
+        <!-- Target Image Frame -->
+        <div class="relative w-44 h-44 mx-auto mb-4 group">
+            <div class="absolute -inset-1 bg-gradient-to-r from-red-600 via-matrixGreen to-green-500 rounded-full blur opacity-75 animate-pulse"></div>
+            <!-- 🔥 BẠN THAY ĐƯỜNG DẪN ẢNH CỦA BẠN BÈ VÀO SRC Ở ĐÂY 🔥 -->
+            <img id="target-img" 
+                 src="anh_ban_be.jpg" 
+                 alt="Mục tiêu" 
+                 onerror="this.src='https://picsum.photos/300/300?grayscale'"
+                 class="relative w-full h-full rounded-full object-cover border-4 border-black shadow-inner">
+            <div class="absolute inset-0 rounded-full border-2 border-dashed border-matrixGreen/50 animate-spin" style="animation-duration: 8s;"></div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-white mb-4">@mynchu236</h2>
+
+        <!-- Progress Bar -->
+        <div class="mb-4 text-left">
+            <div class="flex justify-between text-xs font-bold text-slate-300 mb-1">
+                <span>Tiến trình hack:</span>
+                <span id="percent-text">0%</span>
+            </div>
+            <div class="w-full bg-slate-900 h-4 rounded-full overflow-hidden border border-matrixGreen/40">
+                <div id="progress-bar" class="bg-gradient-to-r from-emerald-600 to-matrixGreen h-full w-0 transition-all duration-300"></div>
+            </div>
+        </div>
+
+        <!-- Terminal Output Log -->
+        <div class="bg-black/90 rounded-lg p-3 text-left border border-slate-800 text-[11px] h-32 overflow-y-auto space-y-1 text-emerald-400/90 font-mono" id="console-log">
+            <p>> Đang kết nối VPN an toàn...</p>
+        </div>
+
+        <!-- Start Prank Button -->
+        <button id="start-btn" onclick="startPrank()" class="mt-5 w-full bg-matrixGreen hover:bg-emerald-400 text-black font-extrabold py-3 px-6 rounded-xl transition-all shadow-lg hover:scale-[1.02] active:scale-95 uppercase tracking-wider">
+            🚀 Bắt đầu hack ngay
+        </button>
+    </div>
+
+    <!-- Final Modal Reveal (Hidden by default) -->
+    <div id="troll-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-darkTerminal border-2 border-gold-400 rounded-3xl p-8 max-w-sm text-center shadow-2xl transform scale-90 transition-transform duration-300">
+            <div class="text-6xl mb-4 animate-bounce">?</div>
+            <h3 class="text-2xl font-extrabold text-amber-400 uppercase mb-2">HACK THÀNH CÔNG!</h3>
+            <p class="text-slate-200 text-sm mb-6 leading-relaxed">
+               Châu ngu
+            </p>
+            <button onclick="resetPrank()" class="bg-amber-400 hover:bg-amber-300 text-black font-bold py-2.5 px-6 rounded-xl transition-all">
+                Đóng lại
+            </button>
+        </div>
+    </div>
+
+    <!-- Script to simulate fake hacking animation -->
+    <script>
+        const logs = [
+            "Bypassing firewall...",
+            "Đang quét lỗ hổng mật khẩu...",
+            "Tìm thấy địa chỉ IP nạn nhân...",
+            "Đang truy xuất token đăng nhập...",
+            "Giải mã mật khẩu 128-bit...",
+            "Trích xuất tin nhắn riêng tư...",
+            "Đang tải dữ liệu tài khoản...",
+            "Sắp hoàn tất 99%...",
+            "Xử lý dữ liệu cuối cùng..."
+            "Châu bị ngu..."
+        ];
+
+        let progress = 0;
+        let interval = null;
+
+        function startPrank() {
+            const btn = document.getElementById('start-btn');
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            btn.innerText = "Đang tiến hành hack...";
+
+            const bar = document.getElementById('progress-bar');
+            const percentText = document.getElementById('percent-text');
+            const consoleLog = document.getElementById('console-log');
+
+            progress = 0;
+            consoleLog.innerHTML = "<p class='text-yellow-400'>> Khởi tạo tấn công...</p>";
+
+            let logIndex = 0;
+
+            interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 8) + 3;
+
+                if (progress > 100) progress = 100;
+
+                bar.style.width = progress + "%";
+                percentText.innerText = progress + "%";
+
+                if (logIndex < logs.length && progress > (logIndex + 1) * 10) {
+                    const p = document.createElement('p');
+                    p.innerText = "> " + logs[logIndex];
+                    consoleLog.appendChild(p);
+                    consoleLog.scrollTop = consoleLog.scrollHeight;
+                    logIndex++;
+                }
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('troll-modal').classList.remove('hidden');
+                    }, 500);
+                }
+            }, 300);
+        }
+
+        function resetPrank() {
+            document.getElementById('troll-modal').classList.add('hidden');
+            const btn = document.getElementById('start-btn');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btn.innerText = "🚀 Bắt đầu hack ngay";
+            document.getElementById('progress-bar').style.width = "0%";
+            document.getElementById('percent-text').innerText = "0%";
+            document.getElementById('console-log').innerHTML = "<p>> Đang kết nối VPN an toàn...</p>";
+        }
+    </script>
+</body>
+</html>
