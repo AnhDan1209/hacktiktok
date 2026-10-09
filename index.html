@@ -37,10 +37,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        canvas {
-            /* Căn đường chân trời của cỏ trùng với chân khung thành */
-            background: linear-gradient(to bottom, #1e293b 0%, #0f172a 45%, #15803d 45%, #166534 100%);
-        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-between p-3 sm:p-6 select-none">
@@ -69,19 +65,19 @@
 
     <!-- Game Canvas Wrapper -->
     <div class="relative w-full max-w-xl aspect-[4/3] rounded-2xl overflow-hidden border-2 border-gold/40 shadow-2xl">
-        <canvas id="gameCanvas" class="w-full h-full block"></canvas>
+        <canvas id="gameCanvas" class="w-full h-full block bg-slate-950"></canvas>
 
         <!-- Notification Banner -->
-        <div id="status-banner" class="absolute inset-x-0 top-1/3 flex flex-col items-center justify-center pointer-events-none transition-all duration-300 transform scale-0 opacity-0">
-            <h2 id="status-text" class="font-display text-5xl sm:text-6xl font-black uppercase tracking-wider text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]">GOAL!</h2>
+        <div id="status-banner" class="absolute inset-x-0 top-1/3 flex flex-col items-center justify-center pointer-events-none transition-all duration-300 transform scale-0 opacity-0 z-20">
+            <h2 id="status-text" class="font-display text-5xl sm:text-6xl font-black uppercase tracking-wider text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.9)]">GOAL!</h2>
             <span id="status-sub" class="text-xs sm:text-sm font-bold bg-black/70 px-4 py-1 rounded-full text-gold uppercase tracking-widest mt-2 border border-gold/30">SIUUUU!</span>
         </div>
 
         <!-- Start Screen -->
-        <div id="start-screen" class="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+        <div id="start-screen" class="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-30">
             <i class="fa-solid fa-futbol text-6xl text-gold mb-4 animate-bounce"></i>
             <h2 class="font-display text-3xl sm:text-4xl font-extrabold gold-text uppercase mb-2">Thử Thách Sút Phạt CR7</h2>
-            <p class="text-xs sm:text-sm text-slate-300 max-w-xs mb-6 font-medium">Lần 1 chọn hướng, lần 2 chọn lực sút! CR7 sẽ lấy đà vung chân sút cực chất!</p>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-xs mb-6 font-medium">Lần 1 chọn hướng, lần 2 chọn lực sút! CR7 lấy đà xé lưới đối phương!</p>
             <button id="start-btn" class="bg-gradient-to-r from-amber-500 to-gold text-black font-extrabold px-8 py-3.5 rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all uppercase tracking-wider text-sm">
                 <i class="fa-solid fa-play mr-2"></i> VÀO GAME
             </button>
@@ -104,7 +100,7 @@
         CR7 Penalty Mini Web Game © 2026 | Sẵn sàng chạy trên GitHub Pages
     </footer>
 
-    <!-- Game Script (Đã phóng to khung thành & nhân vật) -->
+    <!-- Game Script (Cỏ 3D, Chấm 11m & Tỉ lệ CR7 / Messi chuẩn) -->
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -112,7 +108,7 @@
         canvas.width = 600;
         canvas.height = 450;
 
-        // Khởi tạo Ảnh
+        // Khởi tạo Ảnh & Chống lặp vô hạn
         const cr7Img = new Image();
         cr7Img.crossOrigin = "anonymous";
         cr7Img.src = "cr7_game.png";
@@ -142,17 +138,17 @@
         let powerSpeed = 3.5;
         let powerDir = 1;
 
-        // --- BỘ THÔNG SỐ KÍCH THƯỚC MỚI (TO VÀ RÕ HƠN) ---
-        // Khung thành: Rộng 440px (80 -> 520), Cao 135px (70 -> 205)
-        const goal = { left: 80, right: 520, top: 70, bottom: 205 };
+        // TỶ LỆ CHUẨN MỚI:
+        // Khung thành: Rộng 420px, Cao 130px
+        const goal = { left: 90, right: 510, top: 60, bottom: 190 };
 
-        // Thủ môn (Messi): Rộng 70px, Cao 100px
-        const keeper = { x: canvas.width / 2, y: 155, width: 70, height: 100, targetX: canvas.width / 2 };
+        // Messi ở xa: Rộng 50px, Cao 80px
+        const keeper = { x: canvas.width / 2, y: 150, width: 50, height: 80, targetX: canvas.width / 2 };
 
-        // Cầu thủ (CR7): Rộng 65px, Cao 95px
-        const player = { x: canvas.width / 2 - 50, y: 430, startY: 430, targetY: 360, width: 65, height: 95 };
+        // CR7 ở tít gần camera: Rộng 95px, Cao 140px (GẤP ĐÔI MESSI!)
+        const player = { x: canvas.width / 2 - 60, y: 440, startY: 440, targetY: 360, width: 95, height: 140 };
 
-        // Trái bóng: Bán kính 12px
+        // Quả bóng & Chấm 11m
         const ball = { x: canvas.width / 2, y: 365, radius: 12, targetX: 0, targetY: 0, startX: canvas.width / 2, startY: 365, progress: 0 };
 
         document.getElementById('high-score-val').innerText = highScore;
@@ -204,7 +200,7 @@
                 document.getElementById('step-guide').innerText = 'CR7 đang lấy đà...';
                 
                 ball.targetX = aimX;
-                ball.targetY = goal.top + 20 + (100 - power) * 1.0;
+                ball.targetY = goal.top + 20 + (100 - power) * 0.95;
                 ball.progress = 0;
 
                 if (Math.random() < 0.6) {
@@ -230,7 +226,7 @@
             gameState = 'AIM_AIMING';
             aimX = canvas.width / 2;
             power = 0;
-            player.x = canvas.width / 2 - 50;
+            player.x = canvas.width / 2 - 60;
             player.y = player.startY;
             ball.x = canvas.width / 2;
             ball.y = 365;
@@ -272,8 +268,8 @@
             }
 
             if (gameState === 'RUNNING') {
-                player.y -= 4;
-                player.x += 2;
+                player.y -= 4.5;
+                player.x += 2.2;
                 if (player.y <= player.targetY) {
                     gameState = 'SHOOTING';
                     playAudioFX('kick');
@@ -317,28 +313,79 @@
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Khung thành to
-            ctx.strokeStyle = '#FFFFFF';
-            ctx.lineWidth = 7;
-            ctx.strokeRect(goal.left, goal.top, goal.right - goal.left, goal.bottom - goal.top);
+            // --- 1. VẼ BẦU TRỜI & KHÁN ĐÀI ĐẰNG SAU ---
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, goal.bottom);
+            skyGradient.addColorStop(0, '#020617');
+            skyGradient.addColorStop(1, '#0f172a');
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(0, 0, canvas.width, goal.bottom);
 
-            // Lưới khung thành
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            // --- 2. VẼ MẶT CỎ 3D SỌC XEN KẼ ---
+            const grassStartY = goal.bottom;
+            const grassHeight = canvas.height - grassStartY;
+            const stripeCount = 9;
+            const stripeH = grassHeight / stripeCount;
+
+            for (let i = 0; i < stripeCount; i++) {
+                const y = grassStartY + i * stripeH;
+                ctx.fillStyle = (i % 2 === 0) ? '#15803d' : '#166534';
+                ctx.fillRect(0, y, canvas.width, stripeH);
+            }
+
+            // --- 3. VẼ KẺ VẠCH SÂN BÓNG 3D ---
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 2.5;
+
+            // Vạch vôi khung thành
+            ctx.beginPath();
+            ctx.moveTo(30, goal.bottom);
+            ctx.lineTo(570, goal.bottom);
+            ctx.stroke();
+
+            // Vòng cấm 16m50
+            ctx.beginPath();
+            ctx.moveTo(goal.left - 40, goal.bottom);
+            ctx.lineTo(goal.left - 60, canvas.height);
+            ctx.moveTo(goal.right + 40, goal.bottom);
+            ctx.lineTo(goal.right + 60, canvas.height);
+            ctx.stroke();
+
+            // Vòng cung Penalty (Chân vòng cấm)
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, 365, 55, Math.PI * 1.15, Math.PI * 1.85);
+            ctx.stroke();
+
+            // CHẤM LUÂN LƯU 11M NỔI BẬT NẰM NGAY DƯỚI BÓNG
+            ctx.fillStyle = '#FFFFFF';
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 6;
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, 365, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0; // Reset shadow
+
+            // --- 4. VẼ KHUNG THÀNH 3D CÓ ĐỘ SÂU ---
+            // Lưới bóng
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
             ctx.lineWidth = 1;
-            for (let x = goal.left; x <= goal.right; x += 18) {
+            for (let x = goal.left; x <= goal.right; x += 16) {
                 ctx.beginPath(); ctx.moveTo(x, goal.top); ctx.lineTo(x, goal.bottom); ctx.stroke();
             }
-            for (let y = goal.top; y <= goal.bottom; y += 18) {
+            for (let y = goal.top; y <= goal.bottom; y += 14) {
                 ctx.beginPath(); ctx.moveTo(goal.left, y); ctx.lineTo(goal.right, y); ctx.stroke();
             }
 
-            // Chấm phạt đền
-            ctx.fillStyle = '#FFFFFF';
-            ctx.beginPath();
-            ctx.arc(canvas.width / 2, 365, 4, 0, Math.PI * 2);
-            ctx.fill();
+            // Cột dọc & Xà ngang màu trắng bóng
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 8;
+            ctx.strokeRect(goal.left, goal.top, goal.right - goal.left, goal.bottom - goal.top);
 
-            // 2. Vẽ Thủ môn (Messi)
+            // Viền kim loại khung thành 3D
+            ctx.strokeStyle = '#CBD5E1';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(goal.left - 4, goal.top - 4, (goal.right - goal.left) + 8, (goal.bottom - goal.top) + 4);
+
+            // --- 5. VẼ THỦ MÔN (MESSI) Ở XA ---
             if (keeperImg.complete && keeperImg.naturalWidth !== 0) {
                 ctx.drawImage(keeperImg, keeper.x - keeper.width / 2, keeper.y - keeper.height / 2, keeper.width, keeper.height);
             } else {
@@ -346,9 +393,9 @@
                 ctx.fillRect(keeper.x - keeper.width / 2, keeper.y - keeper.height / 2, keeper.width, keeper.height);
             }
 
-            // 3. Tâm ngắm to hơn
+            // --- 6. VẼ TÂM NGẮM & THANH LỰC ---
             if (gameState === 'AIM_AIMING' || gameState === 'POWER_BUILDING') {
-                const reticleY = goal.top + 65;
+                const reticleY = goal.top + 60;
                 ctx.strokeStyle = '#D4AF37';
                 ctx.lineWidth = 2.5;
                 ctx.beginPath();
@@ -361,15 +408,14 @@
                 ctx.stroke();
             }
 
-            // 4. Thanh lực
             if (gameState === 'POWER_BUILDING') {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
                 ctx.fillRect(aimX - 35, goal.top - 22, 70, 12);
                 ctx.fillStyle = power > 80 ? '#EF4444' : '#EAB308';
                 ctx.fillRect(aimX - 35, goal.top - 22, (power / 100) * 70, 12);
             }
 
-            // 5. Trái bóng
+            // --- 7. VẼ TRÁI BÓNG TRÊN CHẤM 11M ---
             ctx.save();
             ctx.beginPath();
             ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
@@ -384,7 +430,7 @@
             ctx.fill();
             ctx.restore();
 
-            // 6. Cầu thủ (CR7)
+            // --- 8. VẼ CR7 TO SIÊU HOÀNH TRÁNG Ở GẦN CAMERA ---
             if (cr7Img.complete && cr7Img.naturalWidth !== 0) {
                 ctx.drawImage(cr7Img, player.x - player.width / 2, player.y - player.height / 2, player.width, player.height);
             } else {
