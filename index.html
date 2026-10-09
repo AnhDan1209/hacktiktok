@@ -103,7 +103,7 @@
         CR7 Penalty Mini Web Game © 2026 | Sẵn sàng chạy trên GitHub Pages
     </footer>
 
-    <!-- Game Script -->
+   <!-- Game Script (Đã sửa lỗi) -->
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -111,14 +111,21 @@
         canvas.width = 600;
         canvas.height = 450;
 
-        // Load PNG Assets
-        cr7Img.src = "cr7_game.png";
+        // Khởi tạo đối tượng Image (Đã sửa lỗi thiếu new Image())
+        const cr7Img = new Image();
         cr7Img.crossOrigin = "anonymous";
-        cr7Img.src = "https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.png";
+        // Ưu tiên dùng ảnh local, nếu không có sẽ load link online
+        cr7Img.src = "cr7_game.png";
+        cr7Img.onerror = () => {
+            cr7Img.src = "https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.png";
+        };
 
-       keeperImg.src = "keeper_game.png";
+        const keeperImg = new Image();
         keeperImg.crossOrigin = "anonymous";
-        keeperImg.src = "https://cdn-icons-png.flaticon.com/512/532/532971.png";
+        keeperImg.src = "keeper_game.png";
+        keeperImg.onerror = () => {
+            keeperImg.src = "https://cdn-icons-png.flaticon.com/512/532/532971.png";
+        };
 
         let score = 0;
         let highScore = localStorage.getItem('cr7_high_score') || 0;
@@ -188,7 +195,7 @@
                 gameState = 'POWER_BUILDING';
                 document.getElementById('step-guide').innerText = 'Bấm lần 2 để chọn LỰC SÚT!';
             } else if (gameState === 'POWER_BUILDING') {
-                gameState = 'RUNNING'; // CR7 starts running up!
+                gameState = 'RUNNING'; 
                 document.getElementById('step-guide').innerText = 'CR7 đang lấy đà...';
                 
                 // Set Ball Trajectory
@@ -292,7 +299,8 @@
                         streak++;
                         if (score > highScore) {
                             highScore = score;
-                            localStorage.getItem('cr7_high_score', highScore);
+                            // Đã sửa lỗi: Dùng setItem để lưu điểm
+                            localStorage.setItem('cr7_high_score', highScore);
                             document.getElementById('high-score-val').innerText = highScore;
                         }
                         document.getElementById('score-val').innerText = score;
@@ -334,7 +342,7 @@
             ctx.arc(canvas.width / 2, 375, 4, 0, Math.PI * 2);
             ctx.fill();
 
-            // 2. Draw Goalkeeper PNG (Fallback drawing if image fails)
+            // 2. Draw Goalkeeper PNG
             if (keeperImg.complete && keeperImg.naturalWidth !== 0) {
                 ctx.drawImage(keeperImg, keeper.x - keeper.width / 2, keeper.y - keeper.height / 2, keeper.width, keeper.height);
             } else {
@@ -379,7 +387,7 @@
             ctx.fill();
             ctx.restore();
 
-            // 6. Draw CR7 PNG (Fallback drawing if image fails)
+            // 6. Draw CR7 PNG
             if (cr7Img.complete && cr7Img.naturalWidth !== 0) {
                 ctx.drawImage(cr7Img, player.x - player.width / 2, player.y - player.height / 2, player.width, player.height);
             } else {
