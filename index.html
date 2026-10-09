@@ -100,7 +100,7 @@
         CR7 Penalty Mini Web Game © 2026 | Sẵn sàng chạy trên GitHub Pages
     </footer>
 
-    <!-- Game Script (Đã cân chỉnh tọa độ CR7 không bị mất chân) -->
+    <!-- Game Script (Đã nâng cấp Messi Bay Người / Dive Animation) -->
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -138,17 +138,20 @@
         let powerSpeed = 3.5;
         let powerDir = 1;
 
-        // BỘ TỌA ĐỘ VÀ KÍCH THƯỚC ĐÃ TỐI ƯU CÂN BẰNG:
-        // Khung thành: Rộng 420px, Cao 125px (Tất cả nằm ở phía trên)
         const goal = { left: 90, right: 510, top: 55, bottom: 180 };
 
-        // Thủ môn (Messi ở xa): Rộng 50px, Cao 75px
-        const keeper = { x: canvas.width / 2, y: 142, width: 50, height: 75, targetX: canvas.width / 2 };
+        // Thủ môn (Messi): Đã thêm góc xoay angle & độ nâng y
+        const keeper = { 
+            x: canvas.width / 2, 
+            y: 142, 
+            baseY: 142,
+            width: 50, 
+            height: 75, 
+            targetX: canvas.width / 2,
+            angle: 0
+        };
 
-        // CR7 ở gần camera: Rộng 90px, Cao 125px -> Đứng gọn gàng từ y=320 đến y=445 (không bị mất chân)
         const player = { x: canvas.width / 2 - 50, y: 382, startY: 382, targetY: 320, width: 90, height: 125 };
-
-        // Quả bóng & Chấm 11m đặt ở y = 310
         const ball = { x: canvas.width / 2, y: 310, radius: 11, targetX: 0, targetY: 0, startX: canvas.width / 2, startY: 310, progress: 0 };
 
         document.getElementById('high-score-val').innerText = highScore;
@@ -203,10 +206,11 @@
                 ball.targetY = goal.top + 20 + (100 - power) * 0.95;
                 ball.progress = 0;
 
-                if (Math.random() < 0.6) {
-                    keeper.targetX = aimX + (Math.random() - 0.5) * 60;
+                // Thủ môn phán đoán bay người
+                if (Math.random() < 0.65) {
+                    keeper.targetX = aimX + (Math.random() - 0.5) * 50;
                 } else {
-                    const jumpChoices = [goal.left + 50, canvas.width / 2, goal.right - 50];
+                    const jumpChoices = [goal.left + 45, canvas.width / 2, goal.right - 45];
                     keeper.targetX = jumpChoices[Math.floor(Math.random() * jumpChoices.length)];
                 }
             }
@@ -232,6 +236,8 @@
             ball.y = 310;
             ball.progress = 0;
             keeper.x = canvas.width / 2;
+            keeper.y = keeper.baseY;
+            keeper.angle = 0;
             document.getElementById('step-guide').innerText = 'Bấm để ngắm HƯỚNG SÚT';
         }
 
@@ -281,11 +287,18 @@
                 ball.x = ball.startX + (ball.targetX - ball.startX) * ball.progress;
                 ball.y = ball.startY + (ball.targetY - ball.startY) * ball.progress;
 
-                keeper.x += (keeper.targetX - keeper.x) * 0.12;
+                // ANIMATION MESSI BAY NGƯỜI DIVE & JUMP:
+                const moveDist = keeper.targetX - (canvas.width / 2);
+                keeper.x += (keeper.targetX - keeper.x) * 0.14;
+
+                // Tự động nhảy nâng độ cao & nghiêng người theo hướng bay
+                const diveProgress = Math.sin(ball.progress * Math.PI);
+                keeper.y = keeper.baseY - (diveProgress * 35); 
+                keeper.angle = (moveDist / 180) * diveProgress; 
 
                 if (ball.progress >= 1) {
                     gameState = 'RESULT';
-                    const hitKeeper = Math.abs(ball.x - keeper.x) < (keeper.width / 2 + ball.radius) && Math.abs(ball.y - keeper.y) < (keeper.height / 2 + ball.radius);
+                    const hitKeeper = Math.abs(ball.x - keeper.x) < (keeper.width / 2 + ball.radius + 10) && Math.abs(ball.y - keeper.y) < (keeper.height / 2 + ball.radius + 10);
                     const insideGoal = ball.x > goal.left + 15 && ball.x < goal.right - 15 && ball.y > goal.top && ball.y < goal.bottom;
 
                     if (insideGoal && !hitKeeper) {
@@ -304,7 +317,7 @@
                         streak = 0;
                         document.getElementById('streak-val').innerText = '0×';
                         playAudioFX('save');
-                        showStatus(false, hitKeeper ? 'SAVED!' : 'OUT!', hitKeeper ? 'Thủ môn đẩy ra!' : 'Sút ra ngoài!');
+                        showStatus(false, hitKeeper ? 'SAVED!' : 'OUT!', hitKeeper ? 'Thủ môn cản phá!' : 'Sút ra ngoài!');
                     }
                 }
             }
@@ -336,13 +349,11 @@
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
             ctx.lineWidth = 2.5;
 
-            // Vạch vôi ngang khung thành
             ctx.beginPath();
             ctx.moveTo(30, goal.bottom);
             ctx.lineTo(570, goal.bottom);
             ctx.stroke();
 
-            // Vòng cấm 16m50
             ctx.beginPath();
             ctx.moveTo(goal.left - 40, goal.bottom);
             ctx.lineTo(goal.left - 65, canvas.height);
@@ -350,12 +361,10 @@
             ctx.lineTo(goal.right + 65, canvas.height);
             ctx.stroke();
 
-            // Vòng cung Penalty (Chân vòng cấm)
             ctx.beginPath();
             ctx.arc(canvas.width / 2, 310, 50, Math.PI * 1.15, Math.PI * 1.85);
             ctx.stroke();
 
-            // CHẤM LUÂN LƯU 11M NỔI BẬT NẰM NGAY DƯỚI BÓNG
             ctx.fillStyle = '#FFFFFF';
             ctx.shadowColor = 'rgba(0,0,0,0.5)';
             ctx.shadowBlur = 6;
@@ -365,7 +374,6 @@
             ctx.shadowBlur = 0; 
 
             // 4. KHUNG THÀNH 3D CÓ ĐỘ SÂU
-            // Lưới bóng
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
             ctx.lineWidth = 1;
             for (let x = goal.left; x <= goal.right; x += 16) {
@@ -375,23 +383,26 @@
                 ctx.beginPath(); ctx.moveTo(goal.left, y); ctx.lineTo(goal.right, y); ctx.stroke();
             }
 
-            // Cột dọc & Xà ngang màu trắng
             ctx.strokeStyle = '#FFFFFF';
             ctx.lineWidth = 8;
             ctx.strokeRect(goal.left, goal.top, goal.right - goal.left, goal.bottom - goal.top);
 
-            // Viền kim loại 3D
             ctx.strokeStyle = '#CBD5E1';
             ctx.lineWidth = 2;
             ctx.strokeRect(goal.left - 4, goal.top - 4, (goal.right - goal.left) + 8, (goal.bottom - goal.top) + 4);
 
-            // 5. THỦ MÔN (MESSI) Ở XA
+            // 5. VẼ MESSI BAY NGƯỜI (XOAY GÓC DIVE)
+            ctx.save();
+            ctx.translate(keeper.x, keeper.y);
+            ctx.rotate(keeper.angle);
+
             if (keeperImg.complete && keeperImg.naturalWidth !== 0) {
-                ctx.drawImage(keeperImg, keeper.x - keeper.width / 2, keeper.y - keeper.height / 2, keeper.width, keeper.height);
+                ctx.drawImage(keeperImg, -keeper.width / 2, -keeper.height / 2, keeper.width, keeper.height);
             } else {
                 ctx.fillStyle = '#E50914';
-                ctx.fillRect(keeper.x - keeper.width / 2, keeper.y - keeper.height / 2, keeper.width, keeper.height);
+                ctx.fillRect(-keeper.width / 2, -keeper.height / 2, keeper.width, keeper.height);
             }
+            ctx.restore();
 
             // 6. TÂM NGẮM & THANH LỰC
             if (gameState === 'AIM_AIMING' || gameState === 'POWER_BUILDING') {
