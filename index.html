@@ -2,177 +2,399 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚠️ ĐANG TẢI DỮ LIỆU HACK...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CR7 Penalty Challenge | Mini Web Game</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for Hacker Terminal feel -->
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        mono: ['"Fira Code"', 'monospace'],
-                    },
                     colors: {
-                        matrixGreen: '#00ff41',
-                        darkTerminal: '#0d1117'
+                        gold: '#D4AF37',
+                        darkbg: '#0B0F19',
+                        cardbg: '#151D2A'
+                    },
+                    fontFamily: {
+                        display: ['Oswald', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif']
                     }
                 }
             }
         }
     </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 65, 0.4); }
-            50% { box-shadow: 0 0 30px rgba(0, 255, 65, 0.8); }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0B0F19;
+            color: #F8FAFC;
+            touch-action: manipulation;
         }
-        .matrix-box {
-            animation: pulse-glow 2s infinite;
+        .gold-text {
+            background: linear-gradient(135deg, #FFF4A3 0%, #E6C200 50%, #D4AF37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .scanline {
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.3));
-            background-size: 100% 4px;
+        canvas {
+            background: linear-gradient(to bottom, #1e293b 0%, #0f172a 40%, #15803d 40%, #166534 100%);
         }
     </style>
 </head>
-<body class="bg-black text-matrixGreen font-mono min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden scanline selection:bg-matrixGreen selection:text-black">
+<body class="min-h-screen flex flex-col items-center justify-between p-3 sm:p-6 select-none">
 
-    <!-- Subtle Glitch Header Banner -->
-    <div class="text-center mb-6">
-        <h1 class="text-xl sm:text-3xl font-extrabold tracking-widest text-red-500 animate-pulse uppercase">
-            ⚠️ HỆ THỐNG ĐANG XỬ LÝ DỮ LIỆU ⚠️
-        </h1>
-        <p class="text-xs sm:text-sm text-emerald-400 mt-1">Đang kết nối tới máy chủ TIK TOK</p>
-    </div>
-
-    <!-- Main Card Container -->
-    <div class="max-w-md w-full bg-darkTerminal border-2 border-matrixGreen/60 rounded-2xl p-6 matrix-box text-center relative z-10 shadow-2xl">
-        
-        <!-- Target Header -->
-        <p class="text-sm font-semibold text-slate-300 uppercase tracking-widest mb-3">
-            🎯 Mục tiêu tấn công:
-        </p>
-
-        <!-- Target Image Frame -->
-        <div class="relative w-44 h-44 mx-auto mb-4 group">
-            <div class="absolute -inset-1 bg-gradient-to-r from-red-600 via-matrixGreen to-green-500 rounded-full blur opacity-75 animate-pulse"></div>
-            <!-- 🔥 BẠN THAY ĐƯỜNG DẪN ẢNH CỦA BẠN BÈ VÀO SRC Ở ĐÂY 🔥 -->
-            <img id="target-img" 
-                 src="anh_ban_be.jpg" 
-                 alt="Mục tiêu" 
-                 onerror="this.src='https://picsum.photos/300/300?grayscale'"
-                 class="relative w-full h-full rounded-full object-cover border-4 border-black shadow-inner">
-            <div class="absolute inset-0 rounded-full border-2 border-dashed border-matrixGreen/50 animate-spin" style="animation-duration: 8s;"></div>
-        </div>
-
-        <h2 class="text-2xl font-bold text-white mb-4">@mynchu236</h2>
-
-        <!-- Progress Bar -->
-        <div class="mb-4 text-left">
-            <div class="flex justify-between text-xs font-bold text-slate-300 mb-1">
-                <span>Tiến trình hack:</span>
-                <span id="percent-text">0%</span>
-            </div>
-            <div class="w-full bg-slate-900 h-4 rounded-full overflow-hidden border border-matrixGreen/40">
-                <div id="progress-bar" class="bg-gradient-to-r from-emerald-600 to-matrixGreen h-full w-0 transition-all duration-300"></div>
+    <!-- Header / Scoreboard -->
+    <div class="w-full max-w-xl flex justify-between items-center bg-cardbg/90 backdrop-blur-md p-4 rounded-2xl border border-gold/30 shadow-xl mb-3">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-gold text-black font-black font-display text-2xl flex items-center justify-center shadow-lg">7</div>
+            <div>
+                <h1 class="font-display text-xl font-bold tracking-wider gold-text uppercase leading-none">CR7 Penalty</h1>
+                <span class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">King of Clutch</span>
             </div>
         </div>
 
-        <!-- Terminal Output Log -->
-        <div class="bg-black/90 rounded-lg p-3 text-left border border-slate-800 text-[11px] h-32 overflow-y-auto space-y-1 text-emerald-400/90 font-mono" id="console-log">
-            <p>> Đang kết nối VPN an toàn...</p>
+        <div class="flex gap-4 text-center">
+            <div class="bg-slate-900/80 px-3 py-1.5 rounded-xl border border-slate-700">
+                <span class="block text-[9px] text-slate-400 font-bold uppercase">Bàn thắng</span>
+                <span id="score-val" class="font-display text-2xl font-black text-gold">0</span>
+            </div>
+            <div class="bg-slate-900/80 px-3 py-1.5 rounded-xl border border-slate-700">
+                <span class="block text-[9px] text-slate-400 font-bold uppercase">Kỷ lục</span>
+                <span id="high-score-val" class="font-display text-2xl font-black text-emerald-400">0</span>
+            </div>
         </div>
-
-        <!-- Start Prank Button -->
-        <button id="start-btn" onclick="startPrank()" class="mt-5 w-full bg-matrixGreen hover:bg-emerald-400 text-black font-extrabold py-3 px-6 rounded-xl transition-all shadow-lg hover:scale-[1.02] active:scale-95 uppercase tracking-wider">
-            🚀 Bắt đầu hack ngay
-        </button>
     </div>
 
-    <!-- Final Modal Reveal (Hidden by default) -->
-    <div id="troll-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-darkTerminal border-2 border-amber-400 rounded-3xl p-8 max-w-sm text-center shadow-2xl transform scale-90 transition-transform duration-300">
-            <div class="text-6xl mb-4 animate-bounce">🤪</div>
-            <h3 class="text-2xl font-extrabold text-amber-400 uppercase mb-2">HACK THÀNH CÔNG!</h3>
-            <p class="text-slate-200 text-sm mb-6 leading-relaxed">
-               Châu ngu
-            </p>
-            <button onclick="resetPrank()" class="bg-amber-400 hover:bg-amber-300 text-black font-bold py-2.5 px-6 rounded-xl transition-all">
-                Đóng lại
+    <!-- Game Canvas Wrapper -->
+    <div class="relative w-full max-w-xl aspect-[4/3] rounded-2xl overflow-hidden border-2 border-gold/40 shadow-2xl">
+        <canvas id="gameCanvas" class="w-full h-full block"></canvas>
+
+        <!-- Notification Banner -->
+        <div id="status-banner" class="absolute inset-x-0 top-1/3 flex flex-col items-center justify-center pointer-events-none transition-all duration-300 transform scale-0 opacity-0">
+            <h2 id="status-text" class="font-display text-5xl sm:text-6xl font-black uppercase tracking-wider text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]">GOAL!</h2>
+            <span id="status-sub" class="text-xs sm:text-sm font-bold bg-black/70 px-4 py-1 rounded-full text-gold uppercase tracking-widest mt-2 border border-gold/30">SIUUUU!</span>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+            <i class="fa-solid fa-futbol text-6xl text-gold mb-4 animate-bounce"></i>
+            <h2 class="font-display text-3xl sm:text-4xl font-extrabold gold-text uppercase mb-2">Thử Thách Sút Phạt CR7</h2>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-xs mb-6 font-medium">Lần 1 chọn hướng, lần 2 chọn lực sút! CR7 sẽ lấy đà vung chân sút cực chất!</p>
+            <button id="start-btn" class="bg-gradient-to-r from-amber-500 to-gold text-black font-extrabold px-8 py-3.5 rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all uppercase tracking-wider text-sm">
+                <i class="fa-solid fa-play mr-2"></i> VÀO GAME
             </button>
         </div>
     </div>
 
-    <!-- Script to simulate fake hacking animation -->
+    <!-- Bottom Controls -->
+    <div class="w-full max-w-xl mt-4 bg-cardbg/80 border border-slate-800 p-4 rounded-2xl flex flex-col gap-3">
+        <div class="flex justify-between items-center text-xs font-bold uppercase text-slate-400">
+            <span>Trạng thái: <strong id="step-guide" class="text-gold">Bấm để ngắm hướng</strong></span>
+            <span>Combo Streak: <strong id="streak-val" class="text-emerald-400">0×</strong></span>
+        </div>
+
+        <button id="shoot-trigger" class="w-full py-4 bg-gradient-to-r from-amber-500 via-gold to-amber-600 text-black font-black font-display text-xl rounded-xl shadow-lg active:scale-95 transition-all uppercase tracking-widest">
+            SÚT PHẠT (TAP / SPACE)
+        </button>
+    </div>
+
+    <footer class="mt-4 text-center text-[10px] text-slate-500 font-medium">
+        CR7 Penalty Mini Web Game © 2026 | Sẵn sàng chạy trên GitHub Pages
+    </footer>
+
+    <!-- Game Script -->
     <script>
-        const logs = [
-            "Bypassing firewall...",
-            "Đang quét lỗ hổng mật khẩu...",
-            "Tìm thấy địa chỉ IP nạn nhân...",
-            "Đang truy xuất token đăng nhập...",
-            "Giải mã mật khẩu 128-bit...",
-            "Trích xuất tin nhắn riêng tư...",
-            "Đang tải dữ liệu tài khoản...",
-            "Sắp hoàn tất 99%...",
-            "Xử lý dữ liệu cuối cùng...",
-            "Châu bị ngu..."
-        ];
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = 600;
+        canvas.height = 450;
 
-        let progress = 0;
-        let interval = null;
+        // Load PNG Assets
+        cr7Img.src = "image/cr7_game.png";
+        cr7Img.crossOrigin = "anonymous";
+        cr7Img.src = "https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.png";
 
-        function startPrank() {
-            const btn = document.getElementById('start-btn');
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-            btn.innerText = "Đang tiến hành hack...";
+       keeperImg.src = "image/keeper_game.png";
+        keeperImg.crossOrigin = "anonymous";
+        keeperImg.src = "https://cdn-icons-png.flaticon.com/512/532/532971.png";
 
-            const bar = document.getElementById('progress-bar');
-            const percentText = document.getElementById('percent-text');
-            const consoleLog = document.getElementById('console-log');
+        let score = 0;
+        let highScore = localStorage.getItem('cr7_high_score') || 0;
+        let streak = 0;
+        let gameState = 'START'; // START, AIM_AIMING, POWER_BUILDING, RUNNING, SHOOTING, RESULT
+        
+        let aimX = canvas.width / 2;
+        let aimSpeed = 4;
+        let aimDir = 1;
 
-            progress = 0;
-            consoleLog.innerHTML = "<p class='text-yellow-400'>> Khởi tạo tấn công...</p>";
+        let power = 0;
+        let powerSpeed = 3.5;
+        let powerDir = 1;
 
-            let logIndex = 0;
+        // Player (CR7) Run-Up Position
+        const player = { x: canvas.width / 2 - 40, y: 430, startY: 430, targetY: 375, width: 45, height: 70 };
 
-            interval = setInterval(() => {
-                progress += Math.floor(Math.random() * 8) + 3;
+        // Ball & Goalie Objects
+        const ball = { x: canvas.width / 2, y: 375, radius: 10, targetX: 0, targetY: 0, startX: canvas.width / 2, startY: 375, progress: 0 };
+        const keeper = { x: canvas.width / 2, y: 155, width: 50, height: 75, targetX: canvas.width / 2 };
+        const goal = { left: 120, right: 480, top: 110, bottom: 200 };
 
-                if (progress > 100) progress = 100;
+        document.getElementById('high-score-val').innerText = highScore;
 
-                bar.style.width = progress + "%";
-                percentText.innerText = progress + "%";
+        // Web Audio Effects
+        function playAudioFX(type) {
+            try {
+                const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctxAudio.createOscillator();
+                const gain = ctxAudio.createGain();
+                osc.connect(gain);
+                gain.connect(ctxAudio.destination);
 
-                if (logIndex < logs.length && progress > (logIndex + 1) * 10) {
-                    const p = document.createElement('p');
-                    p.innerText = "> " + logs[logIndex];
-                    consoleLog.appendChild(p);
-                    consoleLog.scrollTop = consoleLog.scrollHeight;
-                    logIndex++;
+                if (type === 'kick') {
+                    osc.frequency.setValueAtTime(160, ctxAudio.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(35, ctxAudio.currentTime + 0.15);
+                    gain.gain.setValueAtTime(1, ctxAudio.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctxAudio.currentTime + 0.15);
+                    osc.start();
+                    osc.stop(ctxAudio.currentTime + 0.15);
+                } else if (type === 'goal') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(280, ctxAudio.currentTime);
+                    osc.frequency.linearRampToValueAtTime(580, ctxAudio.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.5, ctxAudio.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, ctxAudio.currentTime + 0.5);
+                    osc.start();
+                    osc.stop(ctxAudio.currentTime + 0.5);
+                } else if (type === 'save') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, ctxAudio.currentTime);
+                    osc.frequency.linearRampToValueAtTime(80, ctxAudio.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.5, ctxAudio.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, ctxAudio.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(ctxAudio.currentTime + 0.3);
                 }
-
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        document.getElementById('troll-modal').classList.remove('hidden');
-                    }, 500);
-                }
-            }, 300);
+            } catch(e) {}
         }
 
-        function resetPrank() {
-            document.getElementById('troll-modal').classList.add('hidden');
-            const btn = document.getElementById('start-btn');
-            btn.disabled = false;
-            btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            btn.innerText = "🚀 Bắt đầu hack ngay";
-            document.getElementById('progress-bar').style.width = "0%";
-            document.getElementById('percent-text').innerText = "0%";
-            document.getElementById('console-log').innerHTML = "<p>> Đang kết nối VPN an toàn...</p>";
+        // Input Actions
+        function handleInput() {
+            if (gameState === 'START') {
+                document.getElementById('start-screen').classList.add('hidden');
+                resetForNextShot();
+            } else if (gameState === 'AIM_AIMING') {
+                gameState = 'POWER_BUILDING';
+                document.getElementById('step-guide').innerText = 'Bấm lần 2 để chọn LỰC SÚT!';
+            } else if (gameState === 'POWER_BUILDING') {
+                gameState = 'RUNNING'; // CR7 starts running up!
+                document.getElementById('step-guide').innerText = 'CR7 đang lấy đà...';
+                
+                // Set Ball Trajectory
+                ball.targetX = aimX;
+                ball.targetY = goal.top + 15 + (100 - power) * 0.7;
+                ball.progress = 0;
+
+                // Keeper AI Decision
+                if (Math.random() < 0.6) {
+                    keeper.targetX = aimX + (Math.random() - 0.5) * 50;
+                } else {
+                    const jumpChoices = [goal.left + 35, canvas.width / 2, goal.right - 35];
+                    keeper.targetX = jumpChoices[Math.floor(Math.random() * jumpChoices.length)];
+                }
+            }
         }
+
+        document.getElementById('start-btn').addEventListener('click', handleInput);
+        document.getElementById('shoot-trigger').addEventListener('click', handleInput);
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                handleInput();
+            }
+        });
+
+        function resetForNextShot() {
+            gameState = 'AIM_AIMING';
+            aimX = canvas.width / 2;
+            power = 0;
+            player.x = canvas.width / 2 - 40;
+            player.y = player.startY;
+            ball.x = canvas.width / 2;
+            ball.y = 375;
+            ball.progress = 0;
+            keeper.x = canvas.width / 2;
+            document.getElementById('step-guide').innerText = 'Bấm để ngắm HƯỚNG SÚT';
+        }
+
+        function showStatus(isGoal, text, sub) {
+            const banner = document.getElementById('status-banner');
+            const statusText = document.getElementById('status-text');
+            const statusSub = document.getElementById('status-sub');
+
+            statusText.innerText = text;
+            statusSub.innerText = sub;
+            statusText.className = `font-display text-5xl sm:text-6xl font-black uppercase tracking-wider ${isGoal ? 'text-amber-400' : 'text-red-500'} drop-shadow-[0_5px_15px_rgba(0,0,0,0.9)]`;
+
+            banner.classList.remove('scale-0', 'opacity-0');
+            banner.classList.add('scale-100', 'opacity-100');
+
+            setTimeout(() => {
+                banner.classList.remove('scale-100', 'opacity-100');
+                banner.classList.add('scale-0', 'opacity-0');
+                resetForNextShot();
+            }, 1800);
+        }
+
+        // Game State Updates
+        function update() {
+            // Aiming
+            if (gameState === 'AIM_AIMING') {
+                aimX += aimSpeed * aimDir;
+                if (aimX > goal.right - 20) { aimX = goal.right - 20; aimDir = -1; }
+                if (aimX < goal.left + 20) { aimX = goal.left + 20; aimDir = 1; }
+            }
+
+            // Power
+            if (gameState === 'POWER_BUILDING') {
+                power += powerSpeed * powerDir;
+                if (power >= 100) { power = 100; powerDir = -1; }
+                if (power <= 0) { power = 0; powerDir = 1; }
+            }
+
+            // CR7 Running animation
+            if (gameState === 'RUNNING') {
+                player.y -= 4;
+                player.x += 1.5;
+                if (player.y <= player.targetY) {
+                    gameState = 'SHOOTING';
+                    playAudioFX('kick');
+                }
+            }
+
+            // Ball Flight & Keeper Reaction
+            if (gameState === 'SHOOTING') {
+                ball.progress += 0.045;
+                ball.x = ball.startX + (ball.targetX - ball.startX) * ball.progress;
+                ball.y = ball.startY + (ball.targetY - ball.startY) * ball.progress;
+
+                // Move Keeper
+                keeper.x += (keeper.targetX - keeper.x) * 0.12;
+
+                if (ball.progress >= 1) {
+                    gameState = 'RESULT';
+                    const hitKeeper = Math.abs(ball.x - keeper.x) < (keeper.width / 2 + ball.radius) && Math.abs(ball.y - keeper.y) < (keeper.height / 2 + ball.radius);
+                    const insideGoal = ball.x > goal.left + 10 && ball.x < goal.right - 10 && ball.y > goal.top && ball.y < goal.bottom;
+
+                    if (insideGoal && !hitKeeper) {
+                        score++;
+                        streak++;
+                        if (score > highScore) {
+                            highScore = score;
+                            localStorage.getItem('cr7_high_score', highScore);
+                            document.getElementById('high-score-val').innerText = highScore;
+                        }
+                        document.getElementById('score-val').innerText = score;
+                        document.getElementById('streak-val').innerText = streak + '×';
+                        playAudioFX('goal');
+                        showStatus(true, 'GOAL!', 'SIUUUU! 🔥');
+                    } else {
+                        streak = 0;
+                        document.getElementById('streak-val').innerText = '0×';
+                        playAudioFX('save');
+                        showStatus(false, hitKeeper ? 'SAVED!' : 'OUT!', hitKeeper ? 'Thủ môn đẩy ra!' : 'Sút ra ngoài!');
+                    }
+                }
+            }
+        }
+
+        // Render Canvas
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Goal Structure
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(goal.left, goal.top, goal.right - goal.left, goal.bottom - goal.top);
+
+            // Goal Net Pattern
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 1;
+            for (let x = goal.left; x <= goal.right; x += 15) {
+                ctx.beginPath(); ctx.moveTo(x, goal.top); ctx.lineTo(x, goal.bottom); ctx.stroke();
+            }
+            for (let y = goal.top; y <= goal.bottom; y += 15) {
+                ctx.beginPath(); ctx.moveTo(goal.left, y); ctx.lineTo(goal.right, y); ctx.stroke();
+            }
+
+            // Penalty Spot
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, 375, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 2. Draw Goalkeeper PNG (Fallback drawing if image fails)
+            if (keeperImg.complete && keeperImg.naturalWidth !== 0) {
+                ctx.drawImage(keeperImg, keeper.x - keeper.width / 2, keeper.y - keeper.height / 2, keeper.width, keeper.height);
+            } else {
+                ctx.fillStyle = '#E50914';
+                ctx.fillRect(keeper.x - keeper.width / 2, keeper.y - keeper.height / 2, keeper.width, keeper.height);
+            }
+
+            // 3. Draw Aiming Reticle
+            if (gameState === 'AIM_AIMING' || gameState === 'POWER_BUILDING') {
+                ctx.strokeStyle = '#D4AF37';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(aimX, goal.top + 45, 18, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(aimX - 25, goal.top + 45); ctx.lineTo(aimX + 25, goal.top + 45);
+                ctx.moveTo(aimX, goal.top + 20); ctx.lineTo(aimX, goal.top + 70);
+                ctx.stroke();
+            }
+
+            // 4. Draw Power Bar
+            if (gameState === 'POWER_BUILDING') {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+                ctx.fillRect(aimX - 30, goal.top - 20, 60, 10);
+                ctx.fillStyle = power > 80 ? '#EF4444' : '#EAB308';
+                ctx.fillRect(aimX - 30, goal.top - 20, (power / 100) * 60, 10);
+            }
+
+            // 5. Draw Football
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fill();
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius * 0.4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // 6. Draw CR7 PNG (Fallback drawing if image fails)
+            if (cr7Img.complete && cr7Img.naturalWidth !== 0) {
+                ctx.drawImage(cr7Img, player.x - player.width / 2, player.y - player.height / 2, player.width, player.height);
+            } else {
+                ctx.fillStyle = '#D4AF37';
+                ctx.fillRect(player.x - player.width / 2, player.y - player.height / 2, player.width, player.height);
+            }
+        }
+
+        // Loop
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+        loop();
     </script>
 </body>
 </html>
