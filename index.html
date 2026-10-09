@@ -38,7 +38,8 @@
             -webkit-text-fill-color: transparent;
         }
         canvas {
-            background: linear-gradient(to bottom, #1e293b 0%, #0f172a 40%, #15803d 40%, #166534 100%);
+            /* Căn đường chân trời của cỏ trùng với chân khung thành */
+            background: linear-gradient(to bottom, #1e293b 0%, #0f172a 45%, #15803d 45%, #166534 100%);
         }
     </style>
 </head>
@@ -103,7 +104,7 @@
         CR7 Penalty Mini Web Game © 2026 | Sẵn sàng chạy trên GitHub Pages
     </footer>
 
-   <!-- Game Script (Đã sửa lỗi) -->
+    <!-- Game Script (Đã phóng to khung thành & nhân vật) -->
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -111,12 +112,12 @@
         canvas.width = 600;
         canvas.height = 450;
 
-        // Khởi tạo đối tượng Image (Đã sửa lỗi thiếu new Image())
+        // Khởi tạo Ảnh
         const cr7Img = new Image();
         cr7Img.crossOrigin = "anonymous";
-        // Ưu tiên dùng ảnh local, nếu không có sẽ load link online
         cr7Img.src = "cr7_game.png";
         cr7Img.onerror = () => {
+            cr7Img.onerror = null;
             cr7Img.src = "https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.png";
         };
 
@@ -124,33 +125,38 @@
         keeperImg.crossOrigin = "anonymous";
         keeperImg.src = "keeper_game.png";
         keeperImg.onerror = () => {
+            keeperImg.onerror = null;
             keeperImg.src = "https://cdn-icons-png.flaticon.com/512/532/532971.png";
         };
 
         let score = 0;
         let highScore = localStorage.getItem('cr7_high_score') || 0;
         let streak = 0;
-        let gameState = 'START'; // START, AIM_AIMING, POWER_BUILDING, RUNNING, SHOOTING, RESULT
+        let gameState = 'START'; 
         
         let aimX = canvas.width / 2;
-        let aimSpeed = 4;
+        let aimSpeed = 4.5;
         let aimDir = 1;
 
         let power = 0;
         let powerSpeed = 3.5;
         let powerDir = 1;
 
-        // Player (CR7) Run-Up Position
-        const player = { x: canvas.width / 2 - 40, y: 430, startY: 430, targetY: 375, width: 45, height: 70 };
+        // --- BỘ THÔNG SỐ KÍCH THƯỚC MỚI (TO VÀ RÕ HƠN) ---
+        // Khung thành: Rộng 440px (80 -> 520), Cao 135px (70 -> 205)
+        const goal = { left: 80, right: 520, top: 70, bottom: 205 };
 
-        // Ball & Goalie Objects
-        const ball = { x: canvas.width / 2, y: 375, radius: 10, targetX: 0, targetY: 0, startX: canvas.width / 2, startY: 375, progress: 0 };
-        const keeper = { x: canvas.width / 2, y: 155, width: 50, height: 75, targetX: canvas.width / 2 };
-        const goal = { left: 120, right: 480, top: 110, bottom: 200 };
+        // Thủ môn (Messi): Rộng 70px, Cao 100px
+        const keeper = { x: canvas.width / 2, y: 155, width: 70, height: 100, targetX: canvas.width / 2 };
+
+        // Cầu thủ (CR7): Rộng 65px, Cao 95px
+        const player = { x: canvas.width / 2 - 50, y: 430, startY: 430, targetY: 360, width: 65, height: 95 };
+
+        // Trái bóng: Bán kính 12px
+        const ball = { x: canvas.width / 2, y: 365, radius: 12, targetX: 0, targetY: 0, startX: canvas.width / 2, startY: 365, progress: 0 };
 
         document.getElementById('high-score-val').innerText = highScore;
 
-        // Web Audio Effects
         function playAudioFX(type) {
             try {
                 const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
@@ -186,7 +192,6 @@
             } catch(e) {}
         }
 
-        // Input Actions
         function handleInput() {
             if (gameState === 'START') {
                 document.getElementById('start-screen').classList.add('hidden');
@@ -198,23 +203,22 @@
                 gameState = 'RUNNING'; 
                 document.getElementById('step-guide').innerText = 'CR7 đang lấy đà...';
                 
-                // Set Ball Trajectory
                 ball.targetX = aimX;
-                ball.targetY = goal.top + 15 + (100 - power) * 0.7;
+                ball.targetY = goal.top + 20 + (100 - power) * 1.0;
                 ball.progress = 0;
 
-                // Keeper AI Decision
                 if (Math.random() < 0.6) {
-                    keeper.targetX = aimX + (Math.random() - 0.5) * 50;
+                    keeper.targetX = aimX + (Math.random() - 0.5) * 60;
                 } else {
-                    const jumpChoices = [goal.left + 35, canvas.width / 2, goal.right - 35];
+                    const jumpChoices = [goal.left + 50, canvas.width / 2, goal.right - 50];
                     keeper.targetX = jumpChoices[Math.floor(Math.random() * jumpChoices.length)];
                 }
             }
         }
 
-        document.getElementById('start-btn').addEventListener('click', handleInput);
-        document.getElementById('shoot-trigger').addEventListener('click', handleInput);
+        document.getElementById('start-btn').addEventListener('click', (e) => { e.target.blur(); handleInput(); });
+        document.getElementById('shoot-trigger').addEventListener('click', (e) => { e.target.blur(); handleInput(); });
+        
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
@@ -226,10 +230,10 @@
             gameState = 'AIM_AIMING';
             aimX = canvas.width / 2;
             power = 0;
-            player.x = canvas.width / 2 - 40;
+            player.x = canvas.width / 2 - 50;
             player.y = player.startY;
             ball.x = canvas.width / 2;
-            ball.y = 375;
+            ball.y = 365;
             ball.progress = 0;
             keeper.x = canvas.width / 2;
             document.getElementById('step-guide').innerText = 'Bấm để ngắm HƯỚNG SÚT';
@@ -254,52 +258,45 @@
             }, 1800);
         }
 
-        // Game State Updates
         function update() {
-            // Aiming
             if (gameState === 'AIM_AIMING') {
                 aimX += aimSpeed * aimDir;
-                if (aimX > goal.right - 20) { aimX = goal.right - 20; aimDir = -1; }
-                if (aimX < goal.left + 20) { aimX = goal.left + 20; aimDir = 1; }
+                if (aimX > goal.right - 30) { aimX = goal.right - 30; aimDir = -1; }
+                if (aimX < goal.left + 30) { aimX = goal.left + 30; aimDir = 1; }
             }
 
-            // Power
             if (gameState === 'POWER_BUILDING') {
                 power += powerSpeed * powerDir;
                 if (power >= 100) { power = 100; powerDir = -1; }
                 if (power <= 0) { power = 0; powerDir = 1; }
             }
 
-            // CR7 Running animation
             if (gameState === 'RUNNING') {
                 player.y -= 4;
-                player.x += 1.5;
+                player.x += 2;
                 if (player.y <= player.targetY) {
                     gameState = 'SHOOTING';
                     playAudioFX('kick');
                 }
             }
 
-            // Ball Flight & Keeper Reaction
             if (gameState === 'SHOOTING') {
                 ball.progress += 0.045;
                 ball.x = ball.startX + (ball.targetX - ball.startX) * ball.progress;
                 ball.y = ball.startY + (ball.targetY - ball.startY) * ball.progress;
 
-                // Move Keeper
                 keeper.x += (keeper.targetX - keeper.x) * 0.12;
 
                 if (ball.progress >= 1) {
                     gameState = 'RESULT';
                     const hitKeeper = Math.abs(ball.x - keeper.x) < (keeper.width / 2 + ball.radius) && Math.abs(ball.y - keeper.y) < (keeper.height / 2 + ball.radius);
-                    const insideGoal = ball.x > goal.left + 10 && ball.x < goal.right - 10 && ball.y > goal.top && ball.y < goal.bottom;
+                    const insideGoal = ball.x > goal.left + 15 && ball.x < goal.right - 15 && ball.y > goal.top && ball.y < goal.bottom;
 
                     if (insideGoal && !hitKeeper) {
                         score++;
                         streak++;
                         if (score > highScore) {
                             highScore = score;
-                            // Đã sửa lỗi: Dùng setItem để lưu điểm
                             localStorage.setItem('cr7_high_score', highScore);
                             document.getElementById('high-score-val').innerText = highScore;
                         }
@@ -317,32 +314,31 @@
             }
         }
 
-        // Render Canvas
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Goal Structure
+            // 1. Khung thành to
             ctx.strokeStyle = '#FFFFFF';
-            ctx.lineWidth = 6;
+            ctx.lineWidth = 7;
             ctx.strokeRect(goal.left, goal.top, goal.right - goal.left, goal.bottom - goal.top);
 
-            // Goal Net Pattern
+            // Lưới khung thành
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 1;
-            for (let x = goal.left; x <= goal.right; x += 15) {
+            for (let x = goal.left; x <= goal.right; x += 18) {
                 ctx.beginPath(); ctx.moveTo(x, goal.top); ctx.lineTo(x, goal.bottom); ctx.stroke();
             }
-            for (let y = goal.top; y <= goal.bottom; y += 15) {
+            for (let y = goal.top; y <= goal.bottom; y += 18) {
                 ctx.beginPath(); ctx.moveTo(goal.left, y); ctx.lineTo(goal.right, y); ctx.stroke();
             }
 
-            // Penalty Spot
+            // Chấm phạt đền
             ctx.fillStyle = '#FFFFFF';
             ctx.beginPath();
-            ctx.arc(canvas.width / 2, 375, 4, 0, Math.PI * 2);
+            ctx.arc(canvas.width / 2, 365, 4, 0, Math.PI * 2);
             ctx.fill();
 
-            // 2. Draw Goalkeeper PNG
+            // 2. Vẽ Thủ môn (Messi)
             if (keeperImg.complete && keeperImg.naturalWidth !== 0) {
                 ctx.drawImage(keeperImg, keeper.x - keeper.width / 2, keeper.y - keeper.height / 2, keeper.width, keeper.height);
             } else {
@@ -350,29 +346,30 @@
                 ctx.fillRect(keeper.x - keeper.width / 2, keeper.y - keeper.height / 2, keeper.width, keeper.height);
             }
 
-            // 3. Draw Aiming Reticle
+            // 3. Tâm ngắm to hơn
             if (gameState === 'AIM_AIMING' || gameState === 'POWER_BUILDING') {
+                const reticleY = goal.top + 65;
                 ctx.strokeStyle = '#D4AF37';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 2.5;
                 ctx.beginPath();
-                ctx.arc(aimX, goal.top + 45, 18, 0, Math.PI * 2);
+                ctx.arc(aimX, reticleY, 22, 0, Math.PI * 2);
                 ctx.stroke();
 
                 ctx.beginPath();
-                ctx.moveTo(aimX - 25, goal.top + 45); ctx.lineTo(aimX + 25, goal.top + 45);
-                ctx.moveTo(aimX, goal.top + 20); ctx.lineTo(aimX, goal.top + 70);
+                ctx.moveTo(aimX - 30, reticleY); ctx.lineTo(aimX + 30, reticleY);
+                ctx.moveTo(aimX, reticleY - 30); ctx.lineTo(aimX, reticleY + 30);
                 ctx.stroke();
             }
 
-            // 4. Draw Power Bar
+            // 4. Thanh lực
             if (gameState === 'POWER_BUILDING') {
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-                ctx.fillRect(aimX - 30, goal.top - 20, 60, 10);
+                ctx.fillRect(aimX - 35, goal.top - 22, 70, 12);
                 ctx.fillStyle = power > 80 ? '#EF4444' : '#EAB308';
-                ctx.fillRect(aimX - 30, goal.top - 20, (power / 100) * 60, 10);
+                ctx.fillRect(aimX - 35, goal.top - 22, (power / 100) * 70, 12);
             }
 
-            // 5. Draw Football
+            // 5. Trái bóng
             ctx.save();
             ctx.beginPath();
             ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
@@ -387,7 +384,7 @@
             ctx.fill();
             ctx.restore();
 
-            // 6. Draw CR7 PNG
+            // 6. Cầu thủ (CR7)
             if (cr7Img.complete && cr7Img.naturalWidth !== 0) {
                 ctx.drawImage(cr7Img, player.x - player.width / 2, player.y - player.height / 2, player.width, player.height);
             } else {
@@ -396,7 +393,6 @@
             }
         }
 
-        // Loop
         function loop() {
             update();
             draw();
